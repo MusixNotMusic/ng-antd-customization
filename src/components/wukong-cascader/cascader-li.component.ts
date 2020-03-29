@@ -15,13 +15,11 @@ import {
   Renderer2,
   TemplateRef,
   ViewEncapsulation,
-  OnInit,
   Output,
   EventEmitter
 } from '@angular/core';
 
-import { NzCascaderOption } from './typings';
-import { NzCascaderService } from './cascader.service';
+import { NzCascaderOption  } from './typings';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,7 +31,9 @@ import { NzCascaderService } from './cascader.service';
       <ng-template [ngTemplateOutlet]="optionTemplate" [ngTemplateOutletContext]="{ $implicit: option, index: columnIndex }"></ng-template>
     </ng-container>
     <ng-template #defaultOptionTemplate>
-      <span class="wukong-node-status" (click)="checkedOptionClick($event)">{{option.status}}</span>
+      <span *ngIf="openCheckbox && columnIndex >= multiColumnIndex" class="wukong-node-status" (click)="checkedOptionClick($event)">
+        <div [ngClass]="statusCls"></div>
+      </span>
       <span [innerHTML]="optionLabel | nzHighlight: highlightText:'g':'wukong-cascader-menu-item-keyword'"></span>
     </ng-template>
     <span *ngIf="!option.isLeaf || option.children?.length || option.loading" class="wukong-cascader-menu-item-expand-icon">
@@ -46,58 +46,38 @@ import { NzCascaderService } from './cascader.service';
     '[class.wukong-cascader-menu-item-expand]': '!option.isLeaf',
     '[class.wukong-cascader-menu-item-disabled]': 'option.disabled'
   },
-  providers: [
-    NzCascaderService
-  ],
 })
-export class WukongCascaderOptionComponent implements OnInit{
+export class WukongCascaderOptionComponent {
   @Input() optionTemplate: TemplateRef<NzCascaderOption> | null = null;
   @Input() option: NzCascaderOption;
   @Input() activated = false;
   @Input() highlightText: string;
   @Input() nzLabelProperty = 'label';
   @Input() columnIndex: number;
-  private srv;
-
+  @Input() openCheckbox: boolean;
+  @Input() multiColumnIndex: number;
   @Output() readonly checkedClick = new EventEmitter<NzCascaderOption>();
 
-  constructor(private cdr: ChangeDetectorRef, elementRef: ElementRef, renderer: Renderer2, public cascaderService: NzCascaderService) {
-    this.srv = cascaderService;
+  constructor(private cdr: ChangeDetectorRef, elementRef: ElementRef, renderer: Renderer2) {
     renderer.addClass(elementRef.nativeElement, 'wukong-cascader-menu-item');
-  }
-
-  ngOnInit(): void {
-    // this.option.checked = !!this.option.checked;
-    // console.log('ngOnInit ==>', this.option);
   }
 
   get optionLabel(): string {
     return this.option[this.nzLabelProperty];
   }
 
+  get statusCls(): any{
+    return {
+      'wukong-status-checked': this.option.status === 2,
+      'wukong-status-partion': this.option.status === 1
+    }
+  }
+
   markForCheck(): void {
     this.cdr.markForCheck();
   }
-  
-  // checkedOptionClick(event: Event): void{
-  //   console.log('checkedOptionClick');
-  //   if(event) {
-  //     event.preventDefault();
-  //     event.stopPropagation();
-  //   }
-  //   let isChecked = false;
-  //   if(!this.option.status || this.option.status === 0 || this.option.status === 1) {
-  //     this.option.status = 2;
-  //     isChecked = true;
-  //   } else if(this.option.status === 2) {
-  //     this.option.status = 0;
-  //     isChecked = false;
-  //   }
-  //   this.srv.setChecedChain(this.option, isChecked);
-  // }
 
   checkedOptionClick(event: Event): void{
-    console.log('checkedOptionClick');
     if(event) {
       event.preventDefault();
       event.stopPropagation();

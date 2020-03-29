@@ -15,12 +15,11 @@ import { NzNoAnimationModule } from '../core/no-animation';
 import { NzOutletModule } from '../core/outlet';
 import { NzOverlayModule } from '../core/overlay';
 
-import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzInputModule } from 'ng-zorro-antd/input';
 
 import { WukongCascaderOptionComponent } from './cascader-li.component';
 import { WukongCascaderComponent } from './cascader.component';
+import { SearchFilterPipe } from './search.pipe';
 
 @NgModule({
   imports: [
@@ -28,14 +27,12 @@ import { WukongCascaderComponent } from './cascader.component';
     FormsModule,
     OverlayModule,
     NzOutletModule,
-    NzEmptyModule,
     NzHighlightModule,
     NzIconModule,
-    NzInputModule,
     NzNoAnimationModule,
     NzOverlayModule
   ],
-  declarations: [WukongCascaderComponent, WukongCascaderOptionComponent],
+  declarations: [WukongCascaderComponent, WukongCascaderOptionComponent, SearchFilterPipe],
   exports: [WukongCascaderComponent]
 })
 export class WukongCascaderModule {}

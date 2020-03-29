@@ -60,7 +60,8 @@ export interface NzCascaderComponentAsSource {
   nzLabelProperty: string;
   nzValueProperty: string;
   nzChangeOnSelect: boolean;
-
+  mode: string;
+  openCheckbox: boolean;
   nzChangeOn?(option: NzCascaderOption, level: number): boolean;
 
   // tslint:disable-next-line:no-any

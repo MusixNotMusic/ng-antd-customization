@@ -5,6 +5,12 @@
     height: 600px;
 }
 
-.ant-cascader-picker {
+.wukong-cascader-picker {
     width: 300px;
+}
+
+
+.wukong-icon-arrow-up::before {
+    content: "\25bc";
+    color: gray;
 }

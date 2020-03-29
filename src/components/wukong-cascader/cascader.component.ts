@@ -111,7 +111,11 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
   @Input() nzTriggerAction: NzCascaderTriggerType | NzCascaderTriggerType[] = ['click'] as NzCascaderTriggerType[];
   @Input() nzChangeOn: (option: NzCascaderOption, level: number) => boolean;
   @Input() nzLoadData: (node: NzCascaderOption, index?: number) => PromiseLike<any>; // tslint:disable-line:no-any
-  @Input() mode: string = 'single';
+  @Input() mode: string = 'single'; // 输入values 模式 单个values 输入、 multi values = [][]
+  @Input() searchText: string[] | null; // 叶子节点搜索
+  @Input() searchColumnsIndex: boolean[] = [false, false, false];
+  @Input() multiCheckColumnIndex: number = 1;
+  @Input() inputCls: any = {};
 
   @Input()
   get nzOptions(): NzCascaderOption[] | null {
@@ -203,6 +207,10 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
     return !!this.nzLabelRender;
   }
 
+  get openCheckbox(): boolean {
+    return this.mode === 'multi';
+  }
+
   constructor(
     public cascaderService: NzCascaderService,
     // private i18nService: NzI18nService,
@@ -269,6 +277,8 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
       .subscribe(() => {
         this.cdr.markForCheck();
       });
+
+     this.searchText = this.searchText || new Array(this.searchColumnsIndex.length).fill((''));
   }
 
   ngOnDestroy(): void {
@@ -289,7 +299,6 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
   // tslint:disable-next-line:no-any
   writeValue(value: any): void {
     this.cascaderService.values = toArray(value);
-    console.log('writeValue ==> first', this.cascaderService.values);
     this.cascaderService.syncOptions(true);
   }
 
@@ -319,7 +328,7 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
       return;
     }
     if (visible) {
-      this.cascaderService.syncOptions();
+      this.cascaderService.syncOptions(false);
     }
 
     this.menuVisible = visible;
@@ -474,7 +483,6 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
   }
 
   onOptionClick(option: NzCascaderOption, columnIndex: number, event: Event): void {
-    console.log('onOptionClick');
     if (event) {
       event.preventDefault();
     }
@@ -576,6 +584,8 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
     return activeOpt === option;
   }
 
+  
+
   setDisabledState(isDisabled: boolean): void {
     if (isDisabled) {
       this.closeMenu();
@@ -625,7 +635,13 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
     if (this.isLabelRenderTemplate) {
       this.labelRenderContext = { labels, selectedOptions };
     } else {
-      this.labelRenderText = defaultDisplayRender.call(this, labels, selectedOptions);
+      // 多个值
+      if(this.mode === 'multi') {
+        this.labelRenderText = this.cascaderService.multiCheckedOption.map((item) => { return item.map(option => this.cascaderService.getOptionLabel(option)).join('/') }).join(',');
+      }else {
+        console.log('single ==>', this.cascaderService.values);
+        this.labelRenderText = defaultDisplayRender.call(this, labels, selectedOptions);
+      }
     }
   }
 
@@ -648,12 +664,17 @@ export class WukongCascaderComponent implements NzCascaderComponentAsSource, OnI
   // }
 
   public checkedOptionClick(option): void{
-    console.log('checkedOptionClick');
     if(!option.status || option.status === 0 || option.status === 1) {
       option.status = 2;
     } else if(option.status === 2) {
       option.status = 0;
     }
     this.cascaderService.setChecedChain(option);
+  }
+
+  // searchFilter
+  public searchColumsTextChange(i, event) {
+    console.log(i, event);
+    this.cascaderService.dropBehindColumnsWhenSearch(i);
   }
 }

@@ -1,19 +1,15 @@
 <div cdkOverlayOrigin #origin="cdkOverlayOrigin" #trigger>
     <div *ngIf="nzShowInput">
       <input
-        #input
-        nz-input
-        class="wukong-cascader-input"
+        class="wukong-input wukong-cascader-input"
         [class.wukong-cascader-input-disabled]="nzDisabled"
-        [class.wukong-cascader-input-lg]="nzSize === 'large'"
-        [class.wukong-cascader-input-sm]="nzSize === 'small'"
         [attr.autoComplete]="'off'"
         [attr.placeholder]="showPlaceholder ? nzPlaceHolder : null"
         [attr.autofocus]="nzAutoFocus ? 'autofocus' : null"
         [readonly]="!nzShowSearch"
         [disabled]="nzDisabled"
-        [nzSize]="nzSize"
         [(ngModel)]="inputValue"
+        [ngClass]="inputCls"
         (blur)="handleInputBlur()"
         (focus)="handleInputFocus()"
         (change)="$event.stopPropagation()"
@@ -76,9 +72,9 @@
         [style.width]="dropdownWidthStyle"
         [style.height]="dropdownHeightStyle"
       >
-        <li class="wukong-cascader-menu-item wukong-cascader-menu-item-expanded wukong-cascader-menu-item-disabled">
+        <!-- <li class="wukong-cascader-menu-item wukong-cascader-menu-item-expanded wukong-cascader-menu-item-disabled">
           <nz-embed-empty [nzComponentName]="'cascader'" [specificContent]="nzNotFoundContent"></nz-embed-empty>
-        </li>
+        </li> -->
       </ul>
       <ng-template #hasOptionsTemplate>
         <ul
@@ -87,22 +83,27 @@
           [ngClass]="menuColumnCls"
           [style.height]="dropdownHeightStyle"
           [style.width]="dropdownWidthStyle"
-        >
+        > 
+          <li *ngIf="searchColumnsIndex[i]" class="wukong-cascader-menu-item">
+            <input class="wukong-node-search" type="text" [(ngModel)]="searchText[i]" (input)="searchColumsTextChange(i, $event)" placeholder="请输入搜索内容">
+          </li>
           <li
             wukong-cascader-option
-            *ngFor="let option of options"
+            *ngFor="let option of options | searchFilter: searchText[i]: nzLabelProperty : searchColumnsIndex[i]"
             [columnIndex]="i"
+            [multiColumnIndex]="multiCheckColumnIndex"
             [nzLabelProperty]="nzLabelProperty"
             [optionTemplate]="nzOptionRender"
             [activated]="isOptionActivated(option, i)"
             [highlightText]="inSearchingMode ? inputValue : ''"
             [option]="option"
+            [openCheckbox]="openCheckbox"
             (mouseenter)="onOptionMouseEnter(option, i, $event)"
             (mouseleave)="onOptionMouseLeave(option, i, $event)"
             (click)="onOptionClick(option, i, $event)"
             (checkedClick)="checkedOptionClick(option)"
           >
-        </li>
+          </li>
         </ul>
       </ng-template>
     </div>

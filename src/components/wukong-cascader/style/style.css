@@ -188,10 +188,10 @@
 }
 .wukong-cascader-menu {
   display: inline-block;
-  min-width: 111px;
+  min-width: 180px;
   height: 180px;
   margin: 0;
-  padding: 4px 0;
+  padding: 5px 0;
   overflow: auto;
   vertical-align: top;
   list-style: none;
@@ -223,6 +223,7 @@
 .wukong-cascader-menu-item {
   padding: 5px 12px;
   line-height: 22px;
+  height: 32px;
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.3s;
@@ -945,12 +946,107 @@ textarea.wukong-input {
 
 .wukong-node-status {
   display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 1px solid #aaa;
-  vertical-align: middle;
-  margin-right: 3px;
-  user-select: none;
-  line-height: 10px;
-  text-align: center
+    width: 8px;
+    height: 8px;
+    padding: 2px;
+    border: 1px solid #aaa;
+    box-sizing: content-box;
+    vertical-align: middle;
+    margin-right: 3px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    line-height: 10px;
+    text-align: center;
+}
+
+.wukong-node-search {
+  outline: 0;
+  border: 1px solid transparent;
+  border-bottom: 1px solid black;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
+}
+
+.wukong-status-checked {
+  font-family: unset;
+  margin-top: -1px;
+  -ms-transform: scaleX(-1) rotate(-35deg); /* IE 9 */
+  -webkit-transform: scaleX(-1) rotate(-35deg); /* Chrome, Safari, Opera */
+  transform: scaleX(-1) rotate(-35deg);
+}
+.wukong-status-checked::before {
+  content: 'L';
+  color: #40a9ff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.wukong-status-partion {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0px;
+  background-color: #40a9ff;
+} 
+
+.wukong-input {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 32px;
+  padding: 4px 11px;
+  color: rgba(0,0,0,.65);
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  transition: all .3s;
+}
+.wukong-icon-arrow-down{
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  color: #999;
+  transform: scale(1.4, 0.8);
+  text-align: center;
+}
+
+.wukong-icon-arrow-down:before {
+  content: "V";
+  box-sizing: border-box;
+}
+
+.wukong-cascader-picker-arrow-up{
+  transform: scale(1.4, 0.8) rotate(180deg);
+}
+
+/* loading */
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #333;
+  border-color: #333 transparent #333 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -147,8 +147,10 @@ const scenicspots: { [key: string]: Array<{ value: string; label: string; isLeaf
 export class AppComponent implements OnInit {
   nzOptions: any | null = null;
   values: string[] = ['zhejiang', 'hangzhou', 'xihu'];
-  values1: string[] = ['zhejiang', 'hangzhou', 'xihu'];
+  values1: any[] = [['zhejiang', 'hangzhou', 'xihu'], ['jiangsu', 'AA', 'OPS'], ['jiangsu', 'nanjing', 'QQ']];
   checked: false;
+  searchColumnsIndex = [false, true, true];
+  searchText = ["", "", ""];
   onChanges(values: string[]): void {
     console.log(values, this.values);
   }

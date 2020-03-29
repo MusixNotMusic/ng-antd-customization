@@ -7,7 +7,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, iif } from 'rxjs';
 
 import { arraysEqual, isNotNil } from '../core/util';
 
@@ -83,8 +83,26 @@ export class NzCascaderService implements OnDestroy {
    * Make sure that value matches what is displayed in the dropdown.
    */
   syncOptions(first: boolean = false): void {
-    console.log('syncOptions');
     const values = this.values;
+    this.multiCheckedOption = [];
+    if(this.cascaderComponent.mode === 'multi' && values && Array.isArray(values[0])) {
+      values.forEach((_values, index) => {
+        this.setValueOptions(_values, first, index);
+      })
+      // Promise.all(proimseList).then(() => { console.log('syncOptions finish');});
+    } else {
+      this.setValueOptions(values, first);
+    }
+  }
+  
+  /**
+   * 
+   * @param values 
+   * @param first 
+   * 
+   * 设置一个value 对一个的 options
+   */
+  setValueOptions(values ,first: boolean, index : number = 0) {
     const hasValue = values && values.length;
     const lastColumnIndex = values.length - 1;
     const initColumnWithIndex = (columnIndex: number) => {
@@ -106,16 +124,15 @@ export class NzCascaderService implements OnDestroy {
               });
 
         this.setOptionActivated(option, columnIndex, false, false);
-
+        this.multiCheckedOption[index][columnIndex] = option;
+        // console.log('this.multiCheckedOption ==>', index, columnIndex, option);
         if (columnIndex < lastColumnIndex) {
-          console.log('loaded start');
-
           initColumnWithIndex(columnIndex + 1);
         } else {
           this.dropBehindColumns(columnIndex);
           this.selectedOptions = [...this.activatedOptions];
-          console.log('loaded finish ?');
-          this.initValueStatus(this.selectedOptions);
+          // console.log('loaded finish ?');
+          this.initValueStatus(this.multiCheckedOption[index]);
           this.$redraw.next();
         }
       };
@@ -130,7 +147,7 @@ export class NzCascaderService implements OnDestroy {
 
     this.activatedOptions = [];
     this.selectedOptions = [];
-    this.multiCheckedOption = []
+    this.multiCheckedOption[index] = [];
     if (first && this.cascaderComponent.nzLoadData && !hasValue) {
       // Should also notify the component that value changes. Fix #3480.
       this.$redraw.next();
@@ -138,7 +155,6 @@ export class NzCascaderService implements OnDestroy {
     } else {
       initColumnWithIndex(0);
     }
-    this.multiCheckedOption.push(this.activatedOptions.reverse());
   }
 
 
@@ -158,7 +174,7 @@ export class NzCascaderService implements OnDestroy {
     if (this.inSearchingMode) {
       this.prepareSearchOptions(this.cascaderComponent.inputValue);
     } else if (this.columns.length) {
-      this.syncOptions();
+      this.syncOptions(false);
     }
   }
 
@@ -169,17 +185,14 @@ export class NzCascaderService implements OnDestroy {
    * @param performSelect Select
    * @param loadingChildren Try to load children asynchronously.
    */
-  setOptionActivated(option: NzCascaderOption, columnIndex: number, performSelect: boolean = false, loadingChildren: boolean = true): void {
+  setOptionActivated(option: NzCascaderOption, columnIndex: number, performSelect: boolean = false, loadingChildren: boolean = true, index ?: number): void {
     if (option.disabled) {
       return;
     }
 
     this.activatedOptions[columnIndex] = option;
-    // this.checkedOptions.push(option);
     this.trackAncestorActivatedOptions(columnIndex);
     this.dropBehindActivatedOptions(columnIndex);
-    // 设置状态
-    // this.setStatusByChildrenSet(option);
 
     const isParent = isParentOption(option);
 
@@ -325,7 +338,7 @@ export class NzCascaderService implements OnDestroy {
       this.activatedOptions = [...this.activatedOptionsSnapshot];
       this.selectedOptions = [...this.activatedOptions];
       this.columns = [...this.columnsSnapshot];
-      this.syncOptions();
+      this.syncOptions(false);
       this.$redraw.next();
     }
   }
@@ -337,7 +350,11 @@ export class NzCascaderService implements OnDestroy {
     this.values = [];
     this.selectedOptions = [];
     this.activatedOptions = [];
+    this.multiCheckedOption = [];
     this.dropBehindColumns(0);
+    if(this.cascaderComponent.openCheckbox) {
+      this.removeMultiValues();
+    }
     this.prepareEmitValue();
     this.$redraw.next();
     this.$optionSelected.next(null);
@@ -449,7 +466,15 @@ export class NzCascaderService implements OnDestroy {
   }
 
   private prepareEmitValue(): void {
-    this.values = this.selectedOptions.map(o => this.getOptionValue(o));
+    if(this.cascaderComponent.mode === 'multi') {
+      this.values = this.multiCheckedOption.map((options) => {
+        return options.map((o) => {
+          return this.getOptionValue(o);
+        })
+      });
+    } else {
+      this.values = this.selectedOptions.map(o => this.getOptionValue(o));
+    }
   }
 
   
@@ -493,6 +518,8 @@ export class NzCascaderService implements OnDestroy {
       let isChecked = option.status === 2;
       this.upwardChecked(option, isChecked);
       this.downChecked(option, isChecked);
+      this.updateMultiValues(); 
+      this.prepareEmitValue();
       this.$redraw.next();
   }
 
@@ -535,12 +562,56 @@ export class NzCascaderService implements OnDestroy {
       })
     })
   }
-
+  /** 初始化单值 设置 */
   public initValueStatus(option) {
+    // console.log('initValueStatus ==>', option);
     let last = option.length - 1;
     for(let i = last; i >= 0; i-- ){
       let node = option[i];
       this.setStatusByChildrenSet(node);
     }
+  }
+
+  
+  /**
+   * 更新 values
+   */
+  public updateMultiValues() {
+    let leaves = [];
+    let gotoLeaf = (option, list) => {
+      list.push(option);
+      let children = option.children;
+      if(children && children.length > 0){
+        children.forEach((opt) => {
+          if(opt.status > 0) {
+            gotoLeaf(opt, list.slice());
+          }
+        });
+      }else {
+        if(option.isLeaf) {
+          leaves.push(list);
+        }
+      }
+    }
+    this.columns[0].forEach((option) => {
+      gotoLeaf(option, []);
+    })
+    this.multiCheckedOption = leaves;
+    // this.prepareEmitValue();
+  }
+
+  /**
+   * 移除多值状态
+   */
+  public removeMultiValues() {
+    this.columns[0].forEach((option) => {
+      option.status = 0;
+      this.downChecked(option, false);
+    })
+  }
+
+  public dropBehindColumnsWhenSearch(index: number) {
+    this.dropBehindColumns(index);
+    this.$redraw.next();
   }
 }
