@@ -1,0 +1,116 @@
+.wukong-transfer {
+    display: flex;
+    width: 700px;
+    min-height: 300px;
+    color: rgba(41,42,45,1) !important;
+    & .wukong-transfer-left {
+        width: calc(50% - 25px);
+        // padding: 10px;
+    }
+
+    & .wukong-transfer-title {
+        padding: 10px;
+    }
+
+    & .wukong-transfer-list {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #aaa;
+        height: calc(100% - 30px);
+        justify-content: space-between;
+    }
+
+    & .wukong-transfer-operation {
+        width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        & .transfrer-move {
+            outline: none;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            margin: 5px;
+            border: 1px solid #dadada;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 28px;
+            color: #dadada;
+            transition: all .3s linear;
+        }
+
+        & .transfrer-move-active {
+            color: rgba(53,123,231,1);
+            border: 1px solid rgba(53,123,231,1);
+        }
+    }
+
+    & .wukong-transfer-right {
+        width: calc(50% - 25px);
+    }
+
+    & .wukong-transfer-title {
+        font-size: 12px;
+        line-height: 1.5;
+        padding: 6px 0;
+        margin-bottom: 5px;
+    }
+
+    & .m5 {
+        margin: 5px;
+    }
+
+    & .search-input {
+        height: 36px;
+        padding-left: 5px;
+    }
+
+    & .wukong-transfer-list-header,
+    & .wukong-transfer-list-search,
+    & .wukong-transfer-list-body,
+    & .wukong-transfer-list-footer{
+        box-sizing: border-box;;
+    }
+
+    & .wukong-transfer-list-search {
+        display: flex;
+        & .search-wrap {
+            width: 100%;
+        }
+    }
+
+    & .wukong-transfer-list-footer {
+        height: 36px;
+        line-height: 36px;
+        padding-left: 5px;
+        border-top: 1px solid #aaa;
+    }
+
+    & .wukong-transfer-list-body {
+        height: 280px;
+        & ul {
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            & li {
+                color: rgba(41,42,45,1) !important;
+                padding: 2px 0 2px 0;
+                cursor: pointer;
+                padding: 0 5px 0 5px;
+            }
+            // & li:hover{ 
+            //     background-color: #ECF7FF;
+            //     color: rgba(53,123,231,1);
+            // }
+        }
+    }
+
+    & .wukong-transfer-notify-text {
+        height: 36px;
+        line-height: 36px;
+        padding-left: 5px;
+    }
+}

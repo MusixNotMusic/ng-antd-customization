@@ -1,0 +1,6 @@
+<div style="display: flex; align-items: center; justify-content: center; height: 600px">
+  <!-- <wukong-cascader [(ngModel)]="values" [nzOptions]="nzOptions" (ngModelChange)="onChanges($event)"></wukong-cascader> -->
+  <wukong-transfer [selectOptions]="selectOptions" [selectOption]="selectOptions[1]" [selectLabel]="selectLabel" [selectValue]="selectValue" [(list)]="list" (selectOptionChange)="selectOptionChange($event)" (selected)="selected($event)"></wukong-transfer>
+  <wukong-transfer [(list)]="list1" (selectOptionChange)="selectOptionChange($event)" (selected)="selected($event)" [ngStyle]="{width: '800px'}"></wukong-transfer>
+  <!-- <wukong-cascader [mode]="'multi'" [searchColumnsIndex]="searchColumnsIndex" [searchText]="searchText" [(ngModel)]="values1" [nzLoadData]="loadData" [ngStyle]="{'width': '300px'}"> </wukong-cascader> -->
+</div>
