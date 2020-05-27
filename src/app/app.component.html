@@ -1,5 +1,32 @@
-<div class="box">
-  <!-- <wukong-cascader [(ngModel)]="values"  [nzOptions]="nzOptions" [ngStyle]="{'width': '300px'}" (ngModelChange)="onChanges($event)"></wukong-cascader> -->
-  <wukong-transfer></wukong-transfer>
-  <!-- <wukong-cascader [mode]="'multi'" [searchColumnsIndex]="searchColumnsIndex" [searchText]="searchText" [(ngModel)]="values1" [nzLoadData]="loadData" [ngStyle]="{'width': '300px'}"> </wukong-cascader> -->
+<!-- <div class="box">
+  <wukong-cascader [(ngModel)]="values"  [nzOptions]="nzOptions" [ngStyle]="{'width': '300px'}" (ngModelChange)="onChanges($event)"></wukong-cascader>
+  <wukong-cascader [mode]="'multi'" [searchColumnsIndex]="searchColumnsIndex" [searchText]="searchText" [(ngModel)]="values1" [nzLoadData]="loadData" [ngStyle]="{'width': '300px'}"> </wukong-cascader>
+</div> -->
+
+<h1>Custom Dropdown Demo</h1>
+
+<div style="width: 400px;">
+    <custom-select
+            [required]="true"
+            label="Destination"
+            placeholder="Pick Your Holiday Destination"
+            [(ngModel)]="selectedDestination"
+            #model="ngModel">
+        <custom-select-option key="1" value="Paris"></custom-select-option>
+        <custom-select-option key="2" value="Mauritius"></custom-select-option>
+        <custom-select-option key="3" value="Singapore"></custom-select-option>
+        <custom-select-option key="4" value="Malaysia"></custom-select-option>
+        <custom-select-option key="5" value="Goa"></custom-select-option>
+        <custom-select-option key="6" value="Thailand"></custom-select-option>
+        <custom-select-option key="7" value="A"></custom-select-option>
+        <custom-select-option key="8" value="B"></custom-select-option>
+        <custom-select-option key="9" value="C"></custom-select-option>
+        <custom-select-option key="10" value="D"></custom-select-option>
+        <custom-select-option key="11" value="E"></custom-select-option>
+    </custom-select>
+</div>
+<div *ngIf="model.invalid && (model.dirty || model.touched)" style="color: red">
+    <div *ngIf="model.errors.required">
+        Destintation is required.
+    </div>
 </div>

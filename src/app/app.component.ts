@@ -151,6 +151,7 @@ export class AppComponent implements OnInit {
   checked: false;
   searchColumnsIndex = [false, true, true];
   searchText = ["", "", ""];
+  public selectedDestination: string;
   onChanges(values: string[]): void {
     console.log(values, this.values);
   }

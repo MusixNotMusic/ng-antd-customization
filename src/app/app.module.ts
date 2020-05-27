@@ -1,8 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppComponent } from './app.component';
-import { WukongCascaderModule, WukongTransferModule } from '../components';
+import { WukongCascaderModule,  CustomDropdownModule } from '../components';
 import { NgZorroAntdModule, NZ_I18N, zh_CN } from 'ng-zorro-antd';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -18,7 +17,7 @@ registerLocaleData(zh);
   imports: [
     BrowserModule,
     WukongCascaderModule,
-    WukongTransferModule,
+    CustomDropdownModule,
     NgZorroAntdModule,
     FormsModule,
     HttpClientModule,

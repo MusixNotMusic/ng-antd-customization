@@ -1,0 +1,30 @@
+<div class="input-wrapper">
+	<div class="input" [class.required]="required" #dropreference>
+		<label class="label-text">{{label}}</label>
+		<input #input
+		       placeholder={{placeholder}}
+		       [disabled]="disabled"
+		       [value]="displayText"
+		       (click)="showDropdown()"
+		       (keydown)="onKeyDown($event)"
+		       (blur)="onTouched()"
+		       autocomplete="off">
+		<span class="dropdown-arrow" (click)="onDropMenuIconClick($event)">🔽</span>
+		<!-- <custom-dropdown [reference]="dropreference" #dropdownComp>
+			<div class="dropdown-options-container">
+				<ng-content select="custom-select-option"></ng-content>
+			</div>
+		</custom-dropdown> -->
+		<custom-dropdown [reference]="dropreference" #dropdownComp>
+			<cdk-virtual-scroll-viewport 
+				#scrollComponent 
+				[itemSize]="40 * 5" 
+				[style.height.px]="40 * 5" 
+				class="dropdown-options-container"
+				(scrolledIndexChange)="onScrolledIndexChange($event)"
+				>
+				<ng-content select="custom-select-option"></ng-content>
+			</cdk-virtual-scroll-viewport>
+		</custom-dropdown>
+	</div>
+</div>
