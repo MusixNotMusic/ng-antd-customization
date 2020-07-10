@@ -16,8 +16,8 @@ export class CustomSelectOptionComponent implements Highlightable {
   @Input()
   public value: string | any;
 
-  // @Input()
-  // public hidden: string | any;
+  @Input()
+  public option: string | any;
 
   @HostBinding('class.selected')
   public get selected(): boolean {

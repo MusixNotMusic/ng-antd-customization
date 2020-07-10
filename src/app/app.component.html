@@ -8,7 +8,9 @@
 <div style="width: 400px;">
     <custom-select
             [required]="true"
-            label="Destination"
+            [label]="'key'"
+            [value]="'value'"
+            [search]="true"
             placeholder="Pick Your Holiday Destination"
             [(ngModel)]="selectedDestination"
             (onSelected)="changeEvent($event)"
@@ -21,7 +23,9 @@
 <div style="width: 400px;">
     <custom-select
             [required]="true"
-            label="Destination"
+            [label]="'key'"
+            [value]="'value'"
+            [search]="true"
             placeholder="Pick Your Holiday Destination"
             [(ngModel)]="selectedDestination"
             (onSelected)="changeEvent($event)"

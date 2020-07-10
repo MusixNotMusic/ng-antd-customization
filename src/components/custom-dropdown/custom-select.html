@@ -1,15 +1,17 @@
 <div class="input-wrapper">
 	<div class="input" [class.required]="required" #dropreference>
-		<label class="label-text">{{label}}</label>
 		<input #input
-		       placeholder={{placeholder}}
+			   placeholder={{placeholder}}
 		       [disabled]="disabled"
 		       [value]="displayText"
 		       (click)="showDropdown()"
-		       (keydown)="onKeyDown($event)"
-		       (blur)="onTouched()"
+			   (keydown)="onKeyDown($event)"
+			   [(ngModel)]="inputValue"
+			   (ngModelChange)="_inputValueChange()"
+			   (blur)="onTouched()"
 		       autocomplete="off">
-		<span class="dropdown-arrow" (click)="onDropMenuIconClick($event)">🔽</span>
+		<span *ngIf="!allowAddOption" class="dropdown-arrow" (click)="onDropMenuIconClick($event)">🔽</span>
+		<span *ngIf="allowAddOption" class="dropdown-arrow" (click)="onAddAOptionDataClick($event)">➕</span>
 		<!-- <custom-dropdown [reference]="dropreference" #dropdownComp>
 			<div class="dropdown-options-container">
 				<ng-content select="custom-select-option">
@@ -26,9 +28,10 @@
 				>
 				<!-- <ng-content select="custom-select-option">
 				</ng-content> -->
-				<ng-template select="custom-select-option">
-					<custom-select-option *ngFor="let item of optionList" [key]="item.key" [value]="item" [hidden]="item.hidden"></custom-select-option>
-				</ng-template>
+				<div *ngFor="let item of optionList">
+					<custom-select-option *ngIf="!item.hidden" [key]="getItemKey(item)" [value]="getItemValue(item)" [option]="item"></custom-select-option>
+				</div>
+				<!-- <custom-select-option *ngFor="let item of optionList | searchFilter: inputValue: label : search : 'hidden'" [key]="getItemKey(item)" [value]="getItemValue(item)" [option]="item" [hidden]="item.hidden"></custom-select-option> -->
 			</cdk-virtual-scroll-viewport>
 		</custom-dropdown>
 	</div>

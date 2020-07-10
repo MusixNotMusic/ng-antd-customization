@@ -22,4 +22,8 @@ export class CustomDropdownService {
   public getSelect(): CustomSelectComponent {
     return this.select;
   }
+
+  public pushNewOption(key) {
+    this.optionList.push({[this.select.label]: key, [this.select.value]: key, hidden: false})
+  }
 }

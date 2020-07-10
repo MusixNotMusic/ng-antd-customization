@@ -33,6 +33,7 @@ export class DropdownComponent {
   }
 
   public hide() {
+    console.log('hide');
     this.overlayRef.detach();
     this.showing = false;
   }

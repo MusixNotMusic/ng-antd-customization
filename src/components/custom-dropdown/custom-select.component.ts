@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  OnInit,
   Component,
   ContentChildren,
   ElementRef,
@@ -8,7 +9,8 @@ import {
   Output,
   EventEmitter,
   QueryList,
-  ViewChild
+  ViewChild,
+  ViewChildren
 } from '@angular/core';
 import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -16,6 +18,7 @@ import { CustomDropdownService } from './custom-dropdown.service';
 import { CustomSelectOptionComponent } from './custom-select-option.component';
 import { DropdownComponent } from './dropdown.component';
 import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
+import * as _ from 'lodash';
 
 @Component({
   selector: 'custom-select',
@@ -30,11 +33,11 @@ import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
     CustomDropdownService
   ]
 })
-export class CustomSelectComponent implements AfterViewInit, ControlValueAccessor {
+export class CustomSelectComponent implements OnInit, AfterViewInit, ControlValueAccessor {
 
-  @Input()
-  public label: string;
-
+  @Input() label: string = 'name';
+  @Input() value: string = 'id';
+  @Input() search: boolean = false;
   @Input()
   public placeholder: string;
 
@@ -58,7 +61,10 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
   @ViewChild(DropdownComponent)
   public dropdown: DropdownComponent;
 
-  @ContentChildren(CustomSelectOptionComponent)
+  // @ContentChildren(CustomSelectOptionComponent)
+  // public options: QueryList<CustomSelectOptionComponent>;
+
+  @ViewChildren(CustomSelectOptionComponent)
   public options: QueryList<CustomSelectOptionComponent>;
 
   public selectedOption: CustomSelectOptionComponent;
@@ -74,11 +80,22 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
 
   scrolledIndex: number;
 
+  inputValue: string = '';
+
+  // dropdownShow = false;
+  _inputValueChange: Function;
+
+  allowAddOption: boolean = false;
+
   @ViewChild('scrollComponent')
   private _scrollViewport: CdkVirtualScrollViewport;
 
   constructor(private dropdownService: CustomDropdownService) {
     this.dropdownService.register(this);
+    this._inputValueChange = _.debounce(this.inputValueChange.bind(this), 100);
+  }
+
+  ngOnInit() {
     this.dropdownService.setOptionList(this.optionList);
   }
 
@@ -86,7 +103,7 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
     (window as any)._dropdown = this;
     setTimeout(() => {
       this.selectedOption = this.options.toArray().find(option => option.value === this.selected);
-      this.displayText = this.selectedOption ? this.selectedOption.key : '';
+      this.displayText = this.selectedOption ? this.getItemKey(this.selectedOption) : '';
       this.keyManager = new ActiveDescendantKeyManager(this.options)
         .withHorizontalOrientation('ltr')
         .withVerticalOrientation()
@@ -113,6 +130,7 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
   }
 
   public hideDropdown() {
+    console.log('hideDropdown');
     this.dropdown.hide();
   }
 
@@ -150,7 +168,7 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
       this.dropdown.showing && this.hideDropdown();
     } else if (['ArrowUp', 'Up', 'ArrowDown', 'Down', 'ArrowRight', 'Right', 'ArrowLeft', 'Left']
       .indexOf(event.key) > -1) {
-      console.log(`'Up', 'ArrowDown', 'Down'`, event);
+      // console.log(`'Up', 'ArrowDown', 'Down'`, event);
       this.keyManager.onKeydown(event);
     } else if (event.key === 'PageUp' || event.key === 'PageDown' || event.key === 'Tab') {
       this.dropdown.showing && event.preventDefault();
@@ -196,20 +214,65 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
   }
 
   onScrolledIndexChange(index: number): void {
+    console.log('onScrolledIndexChange ==>', index);
     this.scrolledIndex = index;
   }
 
   setBeforePrevSelectOption() {
     this.prevSelectedOption = this.selectedOption;
     if(this.prevSelectedOption) {
-      this.prevSelectedOption.value.hidden = false;
+      this.prevSelectedOption.option.hidden = false;
     }
   }
 
   setSelectedOption(option) {
-    option.value.hidden = true;
-    this.selected = option.value;
-    this.selectedOption = option;
-    this.displayText = this.selectedOption ? this.selectedOption.key : '';
+    if(!option) {
+      // add option
+    } else {
+      option.option.hidden = true;
+      this.selected = option.value;
+      this.selectedOption = option;
+      this.displayText = this.selectedOption ? this.getItemKey(this.selectedOption) : '';
+      this.inputValue = this.displayText;
+      // this.inputValueChange();
+      this.allowAddOption = false;
+    }
   }
+
+  getItemKey(item) {
+    return item[this.label];
+  }
+
+  getItemValue(item) {
+    return this.value ? item[this.value]: item;
+  }
+
+  inputValueChange() {
+    console.log('inputValueChange', this.inputValue);
+    // if(!this.inputValue || this.inputValue === '') return 
+    let option = this.options.toArray().find((option) => { return option.key === this.inputValue});
+    if(option) {
+      this.allowAddOption = false;
+      this.setBeforePrevSelectOption();
+      this.setSelectedOption(option);
+    } else {
+      this.setBeforePrevSelectOption();
+      if(!this.inputValue) {
+        this.allowAddOption = false;
+      } else {
+        this.allowAddOption = true;
+      }
+    }
+  }
+
+  onAddAOptionDataClick(event) {
+    event.stopPropagation();
+    if(!this.inputValue) return;
+    this.dropdownService.pushNewOption(this.inputValue);
+    setTimeout(() => {
+      let lastOption = this.options.last;
+      this.setSelectedOption(lastOption);
+    })
+  }
+
 }

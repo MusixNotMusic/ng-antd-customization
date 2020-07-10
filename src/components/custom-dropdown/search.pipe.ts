@@ -18,7 +18,11 @@ export class SearchFilterPipe implements PipeTransform {
     let callBack;
     if(hiddenFilter) {
       callBack = (item, index) => {
-        if (item && item[fieldName] && item[hiddenFilter]) {
+        console.log('callBack ==>', item[hiddenFilter]);
+        if(item[hiddenFilter]) {
+          return false;
+        }
+        if (item && item[fieldName]) {
           return item[fieldName].includes(searchText);
         }
         return false;
