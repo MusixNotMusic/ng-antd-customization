@@ -5,7 +5,7 @@ import { CustomSelectComponent } from './custom-select.component';
 
 @Component({
   selector: 'custom-select-option',
-  template: '{{value}}',
+  template: '{{key}}',
   styleUrls: ['./_custom-select-option.scss']
 })
 export class CustomSelectOptionComponent implements Highlightable {
@@ -14,7 +14,10 @@ export class CustomSelectOptionComponent implements Highlightable {
   public key: string;
 
   @Input()
-  public value: string;
+  public value: string | any;
+
+  // @Input()
+  // public hidden: string | any;
 
   @HostBinding('class.selected')
   public get selected(): boolean {
@@ -23,15 +26,16 @@ export class CustomSelectOptionComponent implements Highlightable {
 
   @HostBinding('class.active')
   public active = false;
-
+  
   private select: CustomSelectComponent;
 
   constructor(private dropdownService: CustomDropdownService) {
     this.select = this.dropdownService.getSelect();
+    (window as any)._option = this;
   }
 
   public getLabel(): string {
-    return this.value;
+    return this.key;
   }
 
   public setActiveStyles(): void {
@@ -46,7 +50,7 @@ export class CustomSelectOptionComponent implements Highlightable {
   public onClick(event: UIEvent) {
     event.preventDefault();
     event.stopPropagation();
-
+    console.log('onClick ==>');
     this.select.selectOption(this);
   }
 }

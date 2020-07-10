@@ -11,18 +11,26 @@
             label="Destination"
             placeholder="Pick Your Holiday Destination"
             [(ngModel)]="selectedDestination"
+            (onSelected)="changeEvent($event)"
+            [optionList]="destinationList"
             #model="ngModel">
-        <custom-select-option key="1" value="Paris"></custom-select-option>
-        <custom-select-option key="2" value="Mauritius"></custom-select-option>
-        <custom-select-option key="3" value="Singapore"></custom-select-option>
-        <custom-select-option key="4" value="Malaysia"></custom-select-option>
-        <custom-select-option key="5" value="Goa"></custom-select-option>
-        <custom-select-option key="6" value="Thailand"></custom-select-option>
-        <custom-select-option key="7" value="A"></custom-select-option>
-        <custom-select-option key="8" value="B"></custom-select-option>
-        <custom-select-option key="9" value="C"></custom-select-option>
-        <custom-select-option key="10" value="D"></custom-select-option>
-        <custom-select-option key="11" value="E"></custom-select-option>
+        <!-- <custom-select-option *ngFor="let item of destinationList" [key]="item.key" [value]="item" [hidden]="item.hidden"></custom-select-option> -->
+    </custom-select>
+</div>
+
+<div style="width: 400px;">
+    <custom-select
+            [required]="true"
+            label="Destination"
+            placeholder="Pick Your Holiday Destination"
+            [(ngModel)]="selectedDestination"
+            (onSelected)="changeEvent($event)"
+            [optionList]="destinationList"
+            #model="ngModel">
+        <!-- <ng-container *ngFor="let item of destinationList">
+            <custom-select-option *ngIf="!item.hidden" [key]="item.key" [value]="item"></custom-select-option>
+        </ng-container> -->
+        <!-- <custom-select-option *ngFor="let item of destinationList" [key]="item.key" [value]="item" [hidden]="item.hidden"></custom-select-option> -->
     </custom-select>
 </div>
 <div *ngIf="model.invalid && (model.dirty || model.touched)" style="color: red">

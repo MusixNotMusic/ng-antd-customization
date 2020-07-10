@@ -5,9 +5,18 @@ import { CustomSelectComponent } from './custom-select.component';
 export class CustomDropdownService {
 
   private select: CustomSelectComponent;
+  public optionList: any;
 
   public register(select: CustomSelectComponent) {
     this.select = select;
+  }
+
+  public setOptionList( list ) {
+    this.optionList = list;
+  }
+
+  public getOptionList() {
+    return this.optionList;
   }
 
   public getSelect(): CustomSelectComponent {

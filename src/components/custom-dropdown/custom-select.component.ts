@@ -5,6 +5,8 @@ import {
   ElementRef,
   forwardRef,
   Input,
+  Output,
+  EventEmitter,
   QueryList,
   ViewChild
 } from '@angular/core';
@@ -40,6 +42,11 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
   public selected: string;
 
   @Input()
+  public optionList: any;
+
+  public prevSelectedOption: any;
+
+  @Input()
   public required = false;
 
   @Input()
@@ -59,7 +66,8 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
   public displayText: string;
 
   public onChangeFn = (_: any) => {};
-
+  @Output() public onSelected = new EventEmitter<Object>();
+  
   public onTouchedFn = () => {};
 
   private keyManager: ActiveDescendantKeyManager<CustomSelectOptionComponent>;
@@ -71,12 +79,14 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
 
   constructor(private dropdownService: CustomDropdownService) {
     this.dropdownService.register(this);
+    this.dropdownService.setOptionList(this.optionList);
   }
 
   public ngAfterViewInit() {
+    (window as any)._dropdown = this;
     setTimeout(() => {
-      this.selectedOption = this.options.toArray().find(option => option.key === this.selected);
-      this.displayText = this.selectedOption ? this.selectedOption.value : '';
+      this.selectedOption = this.options.toArray().find(option => option.value === this.selected);
+      this.displayText = this.selectedOption ? this.selectedOption.key : '';
       this.keyManager = new ActiveDescendantKeyManager(this.options)
         .withHorizontalOrientation('ltr')
         .withVerticalOrientation()
@@ -85,7 +95,7 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
 
         this.keyManager.change.next = (value) => { 
           let _value = value / 5 | 0;
-          console.log('this.keyManager.change' , this.scrolledIndex, _value);
+          // console.log('this.keyManager.change' , this.scrolledIndex, _value);
           this._scrollViewport.scrollToIndex(_value, 'smooth');
         };
     });
@@ -128,15 +138,19 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
     }
 
     if (event.key === 'Enter' || event.key === ' ') {
-      this.selectedOption = this.keyManager.activeItem;
-      this.selected = this.selectedOption.key;
-      this.displayText = this.selectedOption ? this.selectedOption.value : '';
+      this.setBeforePrevSelectOption();
+      this.setSelectedOption(this.keyManager.activeItem);
+      // this.selectedOption = this.keyManager.activeItem;
+      // console.log('onKeyDown ==>', this.selectedOption.value);
+      // this.selected = this.selectedOption.value;
+      // this.displayText = this.selectedOption ? this.selectedOption.key : '';
       this.hideDropdown();
       this.onChange();
     } else if (event.key === 'Escape' || event.key === 'Esc') {
       this.dropdown.showing && this.hideDropdown();
     } else if (['ArrowUp', 'Up', 'ArrowDown', 'Down', 'ArrowRight', 'Right', 'ArrowLeft', 'Left']
       .indexOf(event.key) > -1) {
+      console.log(`'Up', 'ArrowDown', 'Down'`, event);
       this.keyManager.onKeydown(event);
     } else if (event.key === 'PageUp' || event.key === 'PageDown' || event.key === 'Tab') {
       this.dropdown.showing && event.preventDefault();
@@ -144,10 +158,13 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
   }
 
   public selectOption(option: CustomSelectOptionComponent) {
+    console.log('selectOption =>', option);
     this.keyManager.setActiveItem(option);
-    this.selected = option.key;
-    this.selectedOption = option;
-    this.displayText = this.selectedOption ? this.selectedOption.value : '';
+    // this.selected = option.value;
+    // this.selectedOption = option;
+    // this.displayText = this.selectedOption ? this.selectedOption.key : '';
+    this.setBeforePrevSelectOption();
+    this.setSelectedOption(option);
     this.hideDropdown();
     this.input.nativeElement.focus();
     this.onChange();
@@ -175,10 +192,24 @@ export class CustomSelectComponent implements AfterViewInit, ControlValueAccesso
 
   public onChange() {
     this.onChangeFn(this.selected);
+    // this.onSelected.emit(this.selected);
   }
 
   onScrolledIndexChange(index: number): void {
-    console.log('onScrolledIndexChange', index);
     this.scrolledIndex = index;
+  }
+
+  setBeforePrevSelectOption() {
+    this.prevSelectedOption = this.selectedOption;
+    if(this.prevSelectedOption) {
+      this.prevSelectedOption.value.hidden = false;
+    }
+  }
+
+  setSelectedOption(option) {
+    option.value.hidden = true;
+    this.selected = option.value;
+    this.selectedOption = option;
+    this.displayText = this.selectedOption ? this.selectedOption.key : '';
   }
 }

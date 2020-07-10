@@ -21,6 +21,7 @@ import { CustomDropdownService } from './custom-dropdown.service';
 import { CustomSelectOptionComponent } from './custom-select-option.component';
 import { CustomSelectComponent } from './custom-select.component';
 import { DropdownComponent } from './dropdown.component';
+import { SearchFilterPipe } from './search.pipe';
 
 @NgModule({
   imports: [
@@ -36,7 +37,7 @@ import { DropdownComponent } from './dropdown.component';
     ScrollDispatchModule
   ],
   providers: [CustomDropdownService],
-  declarations: [CustomSelectOptionComponent, CustomSelectComponent, DropdownComponent],
-  exports: [CustomSelectOptionComponent, CustomSelectComponent, DropdownComponent]
+  declarations: [CustomSelectOptionComponent, CustomSelectComponent, DropdownComponent, SearchFilterPipe],
+  exports: [CustomSelectOptionComponent, CustomSelectComponent, DropdownComponent, SearchFilterPipe]
 })
 export class CustomDropdownModule {}

@@ -138,6 +138,7 @@ const scenicspots: { [key: string]: Array<{ value: string; label: string; isLeaf
   ]
 };
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -151,12 +152,24 @@ export class AppComponent implements OnInit {
   checked: false;
   searchColumnsIndex = [false, true, true];
   searchText = ["", "", ""];
-  public selectedDestination: string;
+  public selectedDestination: string | Object;
+  public destinationList = [
+    {key: 'A', value: '1', hidden: false},
+    {key: 'B', value: '2', hidden: false},
+    {key: 'C', value: '3', hidden: false},
+    {key: 'D', value: '4', hidden: false},
+    {key: 'E', value: '5', hidden: false},
+    {key: 'F', value: '6', hidden: false},
+    {key: 'G', value: '7', hidden: false},
+    {key: 'H', value: '8', hidden: false},
+    {key: 'I', value: '9', hidden: false},
+  ];
   onChanges(values: string[]): void {
     console.log(values, this.values);
   }
 
   ngOnInit(): void {
+    (window as any)._app = this;
     setTimeout(() => {
       this.nzOptions = options;
     }, 500);
@@ -181,5 +194,9 @@ export class AppComponent implements OnInit {
         resolve();
       }, 1000);
     });
+  }
+
+  changeEvent(event) {
+    console.log('changeEvent', event);
   }
 }
